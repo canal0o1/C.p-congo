@@ -9,31 +9,12 @@
     <style>
         :root { --gold: #f59e0b; --oil-black: #020617; }
         body { background: var(--oil-black); font-family: 'Inter', sans-serif; color: white; }
-        
+        .bg-gold-gradient { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .btn-copy { background: rgba(255,255,255,0.1); color: var(--gold); border: 1px solid var(--gold); border-radius: 12px; font-weight: bold; transition: 0.2s; }
-        .btn-copy:active { transform: scale(0.9); background: var(--gold); color: black; }
-        
-        .card-team { 
-            background: rgba(30, 41, 59, 0.5); 
-            border: 1px solid rgba(245, 158, 11, 0.2); 
-            border-radius: 20px; 
-            backdrop-filter: blur(10px);
-        }
-        
-        .lvl-badge { 
-            background: var(--gold); 
-            color: black; 
-            width: 40px; height: 40px; 
-            border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center; 
-            font-weight: 900; 
-        }
-
-        .nav-bottom { 
-            background: rgba(15, 23, 42, 0.95); 
-            backdrop-filter: blur(15px); 
-            border-top: 1px solid rgba(245, 158, 11, 0.2); 
-        }
+        .card-team { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 20px; backdrop-filter: blur(10px); }
+        .lvl-badge { background: var(--gold); color: black; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; transform: rotate(-5deg); }
+        .nav-bottom { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); border-top: 1px solid rgba(245, 158, 11, 0.2); }
+        .member-row { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px; margin-bottom: 5px; border-left: 2px solid var(--gold); }
     </style>
 </head>
 <body class="pb-32">
@@ -51,17 +32,15 @@
         <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-[30px] border border-amber-500/30 shadow-xl">
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <p id="inviteCode" class="text-xl font-black text-amber-500 tracking-widest italic">Chargement...</p>
-                    <p class="text-[9px] uppercase font-black text-slate-400 tracking-widest">Mon Numéro de Parrainage</p>
+                    <p id="inviteCode" class="text-2xl font-black text-amber-500 tracking-widest italic">CP-XXXX</p>
+                    <p class="text-[9px] uppercase font-black text-slate-400 tracking-widest">ID de Parrainage</p>
                 </div>
-                <button onclick="copierCode()" class="btn-copy px-6 py-3 text-[10px] uppercase">Copier</button>
+                <button onclick="copierCode()" class="btn-copy px-6 py-3 text-[10px] uppercase">Copier ID</button>
             </div>
-            
             <div class="h-[1px] bg-amber-500/10 my-4"></div>
-
             <div class="flex justify-between items-center">
                 <div class="truncate mr-4">
-                    <p id="inviteLink" class="text-[10px] text-slate-300 truncate italic font-medium">Lien en cours...</p>
+                    <p id="inviteLink" class="text-[10px] text-slate-300 truncate italic font-medium">Lien en cours de génération...</p>
                     <p class="text-[9px] uppercase font-black text-slate-400 tracking-widest">Lien d'affiliation Direct</p>
                 </div>
                 <button onclick="copierLien()" class="btn-copy px-6 py-3 text-[10px] uppercase">Lien</button>
@@ -69,8 +48,8 @@
         </div>
     </div>
 
-    <div class="px-5 mt-8 space-y-4">
-        <div class="card-team p-5 flex items-center justify-between border-l-4 border-l-amber-500">
+    <div class="px-5 mt-8 space-y-4" id="teamLevelsContainer">
+        <div class="card-team p-5 flex items-center justify-between border-l-4 border-l-amber-500" onclick="toggleMembres(1)">
             <div class="lvl-badge text-xs italic">N1</div>
             <div class="text-center">
                 <p class="text-xs font-black text-amber-500">35%</p>
@@ -81,12 +60,13 @@
                 <p class="text-[8px] uppercase text-slate-500 font-black">Partenaires</p>
             </div>
             <div class="text-right">
-                <p class="text-xs font-bold text-slate-400">Direct</p>
-                <p class="text-[8px] uppercase text-slate-500 font-black">Source</p>
+                <p id="bonusLV1" class="text-sm font-black text-green-500">FC 0</p>
+                <p class="text-[8px] uppercase text-slate-500 font-black">Commissions</p>
             </div>
         </div>
+        <div id="listN1" class="hidden px-2 space-y-1"></div>
 
-        <div class="card-team p-5 flex items-center justify-between border-l-4 border-l-slate-400">
+        <div class="card-team p-5 flex items-center justify-between border-l-4 border-l-slate-400" onclick="toggleMembres(2)">
             <div class="lvl-badge text-xs italic bg-slate-400">N2</div>
             <div class="text-center">
                 <p class="text-xs font-black text-amber-500">2%</p>
@@ -97,12 +77,13 @@
                 <p class="text-[8px] uppercase text-slate-500 font-black">Partenaires</p>
             </div>
             <div class="text-right">
-                <p class="text-xs font-bold text-slate-400">Indirect</p>
-                <p class="text-[8px] uppercase text-slate-500 font-black">Source</p>
+                <p id="bonusLV2" class="text-sm font-black text-green-500">FC 0</p>
+                <p class="text-[8px] uppercase text-slate-500 font-black">Commissions</p>
             </div>
         </div>
+        <div id="listN2" class="hidden px-2 space-y-1"></div>
 
-        <div class="card-team p-5 flex items-center justify-between border-l-4 border-l-slate-800">
+        <div class="card-team p-5 flex items-center justify-between border-l-4 border-l-slate-800" onclick="toggleMembres(3)">
             <div class="lvl-badge text-xs italic bg-slate-700 text-white">N3</div>
             <div class="text-center">
                 <p class="text-xs font-black text-amber-500">1%</p>
@@ -113,102 +94,108 @@
                 <p class="text-[8px] uppercase text-slate-500 font-black">Partenaires</p>
             </div>
             <div class="text-right">
-                <p class="text-xs font-bold text-slate-400">Génération 3</p>
-                <p class="text-[8px] uppercase text-slate-500 font-black">Source</p>
+                <p id="bonusLV3" class="text-sm font-black text-green-500">FC 0</p>
+                <p class="text-[8px] uppercase text-slate-500 font-black">Commissions</p>
             </div>
         </div>
+        <div id="listN3" class="hidden px-2 space-y-1"></div>
     </div>
 
     <div class="px-5 mt-8 grid grid-cols-2 gap-4">
-        <div class="bg-slate-900/50 p-6 rounded-3xl border border-white/5 text-center">
+        <div class="bg-slate-900/50 p-6 rounded-3xl border border-white/5 text-center shadow-inner">
             <p id="totalTeamSize" class="text-2xl font-black text-white italic">0</p>
-            <p class="text-[9px] uppercase font-black text-slate-500 mt-1">Total Équipe</p>
+            <p class="text-[9px] uppercase font-black text-slate-500 mt-1 tracking-widest">Total Équipe</p>
         </div>
-        <div class="bg-slate-900/50 p-6 rounded-3xl border border-white/5 text-center">
-            <p id="userComTotal" class="text-2xl font-black text-amber-500 italic">FC 0</p>
-            <p class="text-[9px] uppercase font-black text-slate-500 mt-1">Solde Actuel</p>
+        <div class="bg-slate-900/50 p-6 rounded-3xl border border-white/5 text-center shadow-inner">
+            <p id="totalCommission" class="text-2xl font-black text-amber-500 italic">FC 0</p>
+            <p class="text-[9px] uppercase font-black text-slate-500 mt-1 tracking-widest">Profits Réseau</p>
         </div>
     </div>
 
     <nav class="fixed bottom-0 left-0 right-0 nav-bottom p-5 flex justify-around items-center z-50">
-        <a href="dashboard.html" class="flex flex-col items-center text-slate-500">
-            <i class="fa-solid fa-house text-xl"></i>
-            <span class="text-[9px] font-bold mt-1 uppercase">Puits</span>
-        </a>
-        <a href="produit.html" class="flex flex-col items-center text-slate-500">
-            <i class="fa-solid fa-bag-shopping text-xl"></i>
-            <span class="text-[9px] font-bold mt-1 uppercase">Marché</span>
-        </a>
-        <a href="equipe.html" class="flex flex-col items-center text-amber-500">
-            <i class="fa-solid fa-users text-xl"></i>
-            <span class="text-[9px] font-bold mt-1 uppercase">Réseau</span>
-        </a>
-        <a href="compte.html" class="flex flex-col items-center text-slate-500">
-            <i class="fa-solid fa-user text-xl"></i>
-            <span class="text-[9px] font-bold mt-1 uppercase">Profil</span>
-        </a>
+        <a href="dashboard.html" class="flex flex-col items-center text-slate-500"><i class="fa-solid fa-house text-xl"></i><span class="text-[9px] font-bold mt-1 uppercase">Puits</span></a>
+        <a href="produit.html" class="flex flex-col items-center text-slate-500"><i class="fa-solid fa-bag-shopping text-xl"></i><span class="text-[9px] font-bold mt-1 uppercase">Marché</span></a>
+        <a href="equipe.html" class="flex flex-col items-center text-amber-500"><i class="fa-solid fa-users text-xl"></i><span class="text-[9px] font-bold mt-1 uppercase">Réseau</span></a>
+        <a href="compte.html" class="flex flex-col items-center text-slate-500"><i class="fa-solid fa-user text-xl"></i><span class="text-[9px] font-bold mt-1 uppercase">Profil</span></a>
     </nav>
 
     <script>
         const DB_URL = "https://firstsolar-e2ba3-default-rtdb.firebaseio.com/congo_petrole/users";
-        const userPhone = localStorage.getItem('userPhone');
-        const baseUrl = window.location.origin + window.location.pathname.replace('equipe.html', 'index.html');
+        const userPhone = localStorage.getItem('userPhone') || "0000000000";
+        const baseUrl = "https://ciyndyste.github.io/C.p-congo/index.html"; 
+
+        function toggleMembres(niv) {
+            const el = document.getElementById('listN1');
+            const el2 = document.getElementById('listN2');
+            const el3 = document.getElementById('listN3');
+            if(niv==1) el.classList.toggle('hidden');
+            if(niv==2) el2.classList.toggle('hidden');
+            if(niv==3) el3.classList.toggle('hidden');
+        }
 
         async function loadTeamData() {
-            if (!userPhone) return;
-
-            // Affichage des infos de parrainage
-            document.getElementById('inviteCode').innerText = userPhone;
-            document.getElementById('inviteLink').innerText = `${baseUrl}?ref=${userPhone}`;
+            const myCode = userPhone.substring(userPhone.length - 6).toUpperCase();
+            document.getElementById('inviteCode').innerText = "CP-" + myCode;
+            document.getElementById('inviteLink').innerText = `${baseUrl}?ref=${myCode}`;
 
             try {
                 const response = await fetch(`${DB_URL}.json`);
                 const allUsers = await response.json();
+                if (!allUsers) return;
 
-                if (allUsers) {
-                    let lv1 = 0, lv2 = 0, lv3 = 0;
-                    const usersList = Object.values(allUsers);
+                let lv1 = 0, lv2 = 0, lv3 = 0;
+                let comLV1 = 0, comLV2 = 0, comLV3 = 0;
+                let htmlN1 = "", htmlN2 = "", htmlN3 = "";
+                const usersArray = Object.values(allUsers);
 
-                    // 1. Compter Niveau 1
-                    const mesFilleulsN1 = usersList.filter(u => u.parrain === userPhone);
-                    lv1 = mesFilleulsN1.length;
+                usersArray.forEach(u => {
+                    if (u.referredBy === myCode) {
+                        lv1++;
+                        let invest = (u.totalInvested || 0);
+                        comLV1 += invest * 0.35;
+                        htmlN1 += `<div class="member-row flex justify-between text-[10px]"><span>${u.phone}</span><span class="text-green-500">+FC ${(invest*0.35).toFixed(0)}</span></div>`;
+                        
+                        const uCode = (u.phone || "").substring((u.phone || "").length - 6).toUpperCase();
+                        usersArray.forEach(subU => {
+                            if (subU.referredBy === uCode && uCode !== "") {
+                                lv2++;
+                                let invest2 = (subU.totalInvested || 0);
+                                comLV2 += invest2 * 0.02;
+                                htmlN2 += `<div class="member-row flex justify-between text-[10px]"><span>${subU.phone}</span><span class="text-green-500">+FC ${(invest2*0.02).toFixed(0)}</span></div>`;
 
-                    // 2. Compter Niveau 2
-                    mesFilleulsN1.forEach(f1 => {
-                        const sesFilleulsN2 = usersList.filter(u => u.parrain === f1.phone);
-                        lv2 += sesFilleulsN2.length;
-
-                        // 3. Compter Niveau 3
-                        sesFilleulsN2.forEach(f2 => {
-                            const sesFilleulsN3 = usersList.filter(u => u.parrain === f2.phone);
-                            lv3 += sesFilleulsN3.length;
+                                const subUCode = (subU.phone || "").substring((subU.phone || "").length - 6).toUpperCase();
+                                usersArray.forEach(lastU => {
+                                    if (lastU.referredBy === subUCode && subUCode !== "") {
+                                        lv3++;
+                                        let invest3 = (lastU.totalInvested || 0);
+                                        comLV3 += invest3 * 0.01;
+                                        htmlN3 += `<div class="member-row flex justify-between text-[10px]"><span>${lastU.phone}</span><span class="text-green-500">+FC ${(invest3*0.01).toFixed(0)}</span></div>`;
+                                    }
+                                });
+                            }
                         });
-                    });
+                    }
+                });
 
-                    // Mise à jour de l'affichage
-                    document.getElementById('countLV1').innerText = lv1;
-                    document.getElementById('countLV2').innerText = lv2;
-                    document.getElementById('countLV3').innerText = lv3;
-                    document.getElementById('totalTeamSize').innerText = lv1 + lv2 + lv3;
-                    
-                    // Afficher le solde actuel de l'utilisateur (qui inclut ses commissions reçues)
-                    const monSolde = allUsers[userPhone]?.balance || 0;
-                    document.getElementById('userComTotal').innerText = `FC ${monSolde.toLocaleString()}`;
-                }
-            } catch (e) { console.error("Erreur team:", e); }
+                document.getElementById('countLV1').innerText = lv1;
+                document.getElementById('bonusLV1').innerText = `FC ${Math.floor(comLV1).toLocaleString()}`;
+                document.getElementById('listN1').innerHTML = htmlN1 || '<p class="text-[9px] text-center opacity-50">Aucun membre</p>';
+                
+                document.getElementById('countLV2').innerText = lv2;
+                document.getElementById('bonusLV2').innerText = `FC ${Math.floor(comLV2).toLocaleString()}`;
+                document.getElementById('listN2').innerHTML = htmlN2 || '<p class="text-[9px] text-center opacity-50">Aucun membre</p>';
+
+                document.getElementById('countLV3').innerText = lv3;
+                document.getElementById('bonusLV3').innerText = `FC ${Math.floor(comLV3).toLocaleString()}`;
+                document.getElementById('listN3').innerHTML = htmlN3 || '<p class="text-[9px] text-center opacity-50">Aucun membre</p>';
+
+                document.getElementById('totalTeamSize').innerText = lv1 + lv2 + lv3;
+                document.getElementById('totalCommission').innerText = `FC ${Math.floor(comLV1 + comLV2 + comLV3).toLocaleString()}`;
+            } catch (e) { console.error(e); }
         }
 
-        function copierCode() {
-            navigator.clipboard.writeText(userPhone);
-            alert("ID copié !");
-        }
-
-        function copierLien() {
-            const link = document.getElementById('inviteLink').innerText;
-            navigator.clipboard.writeText(link);
-            alert("Lien d'invitation copié !");
-        }
-
+        function copierCode() { navigator.clipboard.writeText(document.getElementById('inviteCode').innerText); alert("ID copié !"); }
+        function copierLien() { navigator.clipboard.writeText(document.getElementById('inviteLink').innerText); alert("Lien copié !"); }
         window.onload = loadTeamData;
     </script>
 </body>
