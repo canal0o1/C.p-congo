@@ -9,12 +9,12 @@
     <style>
         :root { --gold: #f59e0b; --oil-black: #020617; }
         body { background: var(--oil-black); font-family: 'Inter', sans-serif; color: white; }
-        .bg-gold-gradient { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .btn-copy { background: rgba(255,255,255,0.1); color: var(--gold); border: 1px solid var(--gold); border-radius: 12px; font-weight: bold; transition: 0.2s; }
-        .card-team { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 20px; backdrop-filter: blur(10px); }
+        .card-team { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 20px; backdrop-filter: blur(10px); cursor: pointer; }
         .lvl-badge { background: var(--gold); color: black; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; transform: rotate(-5deg); }
         .nav-bottom { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); border-top: 1px solid rgba(245, 158, 11, 0.2); }
-        .member-row { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px; margin-bottom: 5px; border-left: 2px solid var(--gold); }
+        .member-row { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px; margin-bottom: 5px; border-left: 2px solid var(--gold); display: flex; justify-content: space-between; font-size: 10px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body class="pb-32">
@@ -40,7 +40,7 @@
             <div class="h-[1px] bg-amber-500/10 my-4"></div>
             <div class="flex justify-between items-center">
                 <div class="truncate mr-4">
-                    <p id="inviteLink" class="text-[10px] text-slate-300 truncate italic font-medium">Lien en cours de génération...</p>
+                    <p id="inviteLink" class="text-[10px] text-slate-300 truncate italic font-medium">Lien en cours...</p>
                     <p class="text-[9px] uppercase font-black text-slate-400 tracking-widest">Lien d'affiliation Direct</p>
                 </div>
                 <button onclick="copierLien()" class="btn-copy px-6 py-3 text-[10px] uppercase">Lien</button>
@@ -64,7 +64,7 @@
                 <p class="text-[8px] uppercase text-slate-500 font-black">Commissions</p>
             </div>
         </div>
-        <div id="listN1" class="hidden px-2 space-y-1"></div>
+        <div id="listN1" class="hidden px-2 space-y-1 mt-2"></div>
 
         <div class="card-team p-5 flex items-center justify-between border-l-4 border-l-slate-400" onclick="toggleMembres(2)">
             <div class="lvl-badge text-xs italic bg-slate-400">N2</div>
@@ -81,7 +81,7 @@
                 <p class="text-[8px] uppercase text-slate-500 font-black">Commissions</p>
             </div>
         </div>
-        <div id="listN2" class="hidden px-2 space-y-1"></div>
+        <div id="listN2" class="hidden px-2 space-y-1 mt-2"></div>
 
         <div class="card-team p-5 flex items-center justify-between border-l-4 border-l-slate-800" onclick="toggleMembres(3)">
             <div class="lvl-badge text-xs italic bg-slate-700 text-white">N3</div>
@@ -98,7 +98,7 @@
                 <p class="text-[8px] uppercase text-slate-500 font-black">Commissions</p>
             </div>
         </div>
-        <div id="listN3" class="hidden px-2 space-y-1"></div>
+        <div id="listN3" class="hidden px-2 space-y-1 mt-2"></div>
     </div>
 
     <div class="px-5 mt-8 grid grid-cols-2 gap-4">
@@ -121,19 +121,22 @@
 
     <script>
         const DB_URL = "https://firstsolar-e2ba3-default-rtdb.firebaseio.com/congo_petrole/users";
-        const userPhone = localStorage.getItem('userPhone') || "0000000000";
+        const userPhone = localStorage.getItem('userPhone') || "";
         const baseUrl = "https://ciyndyste.github.io/C.p-congo/index.html"; 
 
         function toggleMembres(niv) {
-            const el = document.getElementById('listN1');
-            const el2 = document.getElementById('listN2');
-            const el3 = document.getElementById('listN3');
-            if(niv==1) el.classList.toggle('hidden');
-            if(niv==2) el2.classList.toggle('hidden');
-            if(niv==3) el3.classList.toggle('hidden');
+            const listIds = ['listN1', 'listN2', 'listN3'];
+            listIds.forEach((id, index) => {
+                if (index + 1 === niv) {
+                    document.getElementById(id).classList.toggle('hidden');
+                } else {
+                    document.getElementById(id).classList.add('hidden');
+                }
+            });
         }
 
         async function loadTeamData() {
+            if(!userPhone) return;
             const myCode = userPhone.substring(userPhone.length - 6).toUpperCase();
             document.getElementById('inviteCode').innerText = "CP-" + myCode;
             document.getElementById('inviteLink').innerText = `${baseUrl}?ref=${myCode}`;
@@ -143,59 +146,66 @@
                 const allUsers = await response.json();
                 if (!allUsers) return;
 
-                let lv1 = 0, lv2 = 0, lv3 = 0;
-                let comLV1 = 0, comLV2 = 0, comLV3 = 0;
-                let htmlN1 = "", htmlN2 = "", htmlN3 = "";
-                const usersArray = Object.values(allUsers);
-
-                usersArray.forEach(u => {
-                    if (u.referredBy === myCode) {
-                        lv1++;
-                        let invest = (u.totalInvested || 0);
-                        comLV1 += invest * 0.35;
-                        htmlN1 += `<div class="member-row flex justify-between text-[10px]"><span>${u.phone}</span><span class="text-green-500">+FC ${(invest*0.35).toFixed(0)}</span></div>`;
-                        
-                        const uCode = (u.phone || "").substring((u.phone || "").length - 6).toUpperCase();
-                        usersArray.forEach(subU => {
-                            if (subU.referredBy === uCode && uCode !== "") {
-                                lv2++;
-                                let invest2 = (subU.totalInvested || 0);
-                                comLV2 += invest2 * 0.02;
-                                htmlN2 += `<div class="member-row flex justify-between text-[10px]"><span>${subU.phone}</span><span class="text-green-500">+FC ${(invest2*0.02).toFixed(0)}</span></div>`;
-
-                                const subUCode = (subU.phone || "").substring((subU.phone || "").length - 6).toUpperCase();
-                                usersArray.forEach(lastU => {
-                                    if (lastU.referredBy === subUCode && subUCode !== "") {
-                                        lv3++;
-                                        let invest3 = (lastU.totalInvested || 0);
-                                        comLV3 += invest3 * 0.01;
-                                        htmlN3 += `<div class="member-row flex justify-between text-[10px]"><span>${lastU.phone}</span><span class="text-green-500">+FC ${(invest3*0.01).toFixed(0)}</span></div>`;
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-
-                document.getElementById('countLV1').innerText = lv1;
-                document.getElementById('bonusLV1').innerText = `FC ${Math.floor(comLV1).toLocaleString()}`;
-                document.getElementById('listN1').innerHTML = htmlN1 || '<p class="text-[9px] text-center opacity-50">Aucun membre</p>';
+                const users = Object.values(allUsers);
                 
-                document.getElementById('countLV2').innerText = lv2;
-                document.getElementById('bonusLV2').innerText = `FC ${Math.floor(comLV2).toLocaleString()}`;
-                document.getElementById('listN2').innerHTML = htmlN2 || '<p class="text-[9px] text-center opacity-50">Aucun membre</p>';
+                // NIVEAU 1
+                const n1Users = users.filter(u => u.parrain === myCode);
+                const com1 = n1Users.reduce((acc, u) => acc + (Number(u.totalInvested) || 0) * 0.35, 0);
+                
+                // NIVEAU 2
+                const n2Users = users.filter(u => {
+                    return n1Users.some(n1 => {
+                        const n1Code = (n1.phone || "").substring((n1.phone || "").length - 6).toUpperCase();
+                        return u.parrain === n1Code;
+                    });
+                });
+                const com2 = n2Users.reduce((acc, u) => acc + (Number(u.totalInvested) || 0) * 0.02, 0);
 
-                document.getElementById('countLV3').innerText = lv3;
-                document.getElementById('bonusLV3').innerText = `FC ${Math.floor(comLV3).toLocaleString()}`;
-                document.getElementById('listN3').innerHTML = htmlN3 || '<p class="text-[9px] text-center opacity-50">Aucun membre</p>';
+                // NIVEAU 3
+                const n3Users = users.filter(u => {
+                    return n2Users.some(n2 => {
+                        const n2Code = (n2.phone || "").substring((n2.phone || "").length - 6).toUpperCase();
+                        return u.parrain === n2Code;
+                    });
+                });
+                const com3 = n3Users.reduce((acc, u) => acc + (Number(u.totalInvested) || 0) * 0.01, 0);
 
-                document.getElementById('totalTeamSize').innerText = lv1 + lv2 + lv3;
-                document.getElementById('totalCommission').innerText = `FC ${Math.floor(comLV1 + comLV2 + comLV3).toLocaleString()}`;
-            } catch (e) { console.error(e); }
+                // AFFICHAGE COMPTEURS
+                document.getElementById('countLV1').innerText = n1Users.length;
+                document.getElementById('countLV2').innerText = n2Users.length;
+                document.getElementById('countLV3').innerText = n3Users.length;
+
+                // AFFICHAGE COMMISSIONS
+                document.getElementById('bonusLV1').innerText = `FC ${Math.floor(com1).toLocaleString()}`;
+                document.getElementById('bonusLV2').innerText = `FC ${Math.floor(com2).toLocaleString()}`;
+                document.getElementById('bonusLV3').innerText = `FC ${Math.floor(com3).toLocaleString()}`;
+
+                // GÉNÉRATION DES LISTES
+                const buildHtml = (list, rate) => list.map(u => `
+                    <div class="member-row">
+                        <span>${u.phone}</span>
+                        <span class="text-green-500">+FC ${((u.totalInvested || 0) * rate).toFixed(0)}</span>
+                    </div>`).join('') || '<p class="text-[9px] text-center opacity-30">Aucun membre</p>';
+
+                document.getElementById('listN1').innerHTML = buildHtml(n1Users, 0.35);
+                document.getElementById('listN2').innerHTML = buildHtml(n2Users, 0.02);
+                document.getElementById('listN3').innerHTML = buildHtml(n3Users, 0.01);
+
+                document.getElementById('totalTeamSize').innerText = n1Users.length + n2Users.length + n3Users.length;
+                document.getElementById('totalCommission').innerText = `FC ${Math.floor(com1 + com2 + com3).toLocaleString()}`;
+
+            } catch (e) { console.error("Erreur team:", e); }
         }
 
-        function copierCode() { navigator.clipboard.writeText(document.getElementById('inviteCode').innerText); alert("ID copié !"); }
-        function copierLien() { navigator.clipboard.writeText(document.getElementById('inviteLink').innerText); alert("Lien copié !"); }
+        function copierCode() { 
+            navigator.clipboard.writeText(document.getElementById('inviteCode').innerText); 
+            alert("ID copié !"); 
+        }
+        function copierLien() { 
+            navigator.clipboard.writeText(document.getElementById('inviteLink').innerText); 
+            alert("Lien copié !"); 
+        }
+        
         window.onload = loadTeamData;
     </script>
 </body>
