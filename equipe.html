@@ -10,7 +10,6 @@
         :root { --gold: #f59e0b; --oil-black: #020617; }
         body { background: var(--oil-black); font-family: 'Inter', sans-serif; color: white; }
         
-        .bg-gold-gradient { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .btn-copy { background: rgba(255,255,255,0.1); color: var(--gold); border: 1px solid var(--gold); border-radius: 12px; font-weight: bold; transition: 0.2s; }
         .btn-copy:active { transform: scale(0.9); background: var(--gold); color: black; }
         
@@ -28,7 +27,6 @@
             border-radius: 12px; 
             display: flex; align-items: center; justify-content: center; 
             font-weight: 900; 
-            transform: rotate(-5deg);
         }
 
         .nav-bottom { 
@@ -53,17 +51,17 @@
         <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-[30px] border border-amber-500/30 shadow-xl">
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <p id="inviteCode" class="text-2xl font-black text-amber-500 tracking-widest italic">CP-XXXX</p>
-                    <p class="text-[9px] uppercase font-black text-slate-400 tracking-widest">ID de Parrainage</p>
+                    <p id="inviteCode" class="text-xl font-black text-amber-500 tracking-widest italic">Chargement...</p>
+                    <p class="text-[9px] uppercase font-black text-slate-400 tracking-widest">Mon Numéro de Parrainage</p>
                 </div>
-                <button onclick="copierCode()" class="btn-copy px-6 py-3 text-[10px] uppercase">Copier ID</button>
+                <button onclick="copierCode()" class="btn-copy px-6 py-3 text-[10px] uppercase">Copier</button>
             </div>
             
             <div class="h-[1px] bg-amber-500/10 my-4"></div>
 
             <div class="flex justify-between items-center">
                 <div class="truncate mr-4">
-                    <p id="inviteLink" class="text-[10px] text-slate-300 truncate italic font-medium">Lien en cours de génération...</p>
+                    <p id="inviteLink" class="text-[10px] text-slate-300 truncate italic font-medium">Lien en cours...</p>
                     <p class="text-[9px] uppercase font-black text-slate-400 tracking-widest">Lien d'affiliation Direct</p>
                 </div>
                 <button onclick="copierLien()" class="btn-copy px-6 py-3 text-[10px] uppercase">Lien</button>
@@ -71,7 +69,7 @@
         </div>
     </div>
 
-    <div class="px-5 mt-8 space-y-4" id="teamLevelsContainer">
+    <div class="px-5 mt-8 space-y-4">
         <div class="card-team p-5 flex items-center justify-between border-l-4 border-l-amber-500">
             <div class="lvl-badge text-xs italic">N1</div>
             <div class="text-center">
@@ -83,8 +81,8 @@
                 <p class="text-[8px] uppercase text-slate-500 font-black">Partenaires</p>
             </div>
             <div class="text-right">
-                <p id="bonusLV1" class="text-sm font-black text-green-500">FC 0</p>
-                <p class="text-[8px] uppercase text-slate-500 font-black">Commissions</p>
+                <p class="text-xs font-bold text-slate-400">Direct</p>
+                <p class="text-[8px] uppercase text-slate-500 font-black">Source</p>
             </div>
         </div>
 
@@ -99,8 +97,8 @@
                 <p class="text-[8px] uppercase text-slate-500 font-black">Partenaires</p>
             </div>
             <div class="text-right">
-                <p id="bonusLV2" class="text-sm font-black text-green-500">FC 0</p>
-                <p class="text-[8px] uppercase text-slate-500 font-black">Commissions</p>
+                <p class="text-xs font-bold text-slate-400">Indirect</p>
+                <p class="text-[8px] uppercase text-slate-500 font-black">Source</p>
             </div>
         </div>
 
@@ -115,20 +113,20 @@
                 <p class="text-[8px] uppercase text-slate-500 font-black">Partenaires</p>
             </div>
             <div class="text-right">
-                <p id="bonusLV3" class="text-sm font-black text-green-500">FC 0</p>
-                <p class="text-[8px] uppercase text-slate-500 font-black">Commissions</p>
+                <p class="text-xs font-bold text-slate-400">Génération 3</p>
+                <p class="text-[8px] uppercase text-slate-500 font-black">Source</p>
             </div>
         </div>
     </div>
 
     <div class="px-5 mt-8 grid grid-cols-2 gap-4">
-        <div class="bg-slate-900/50 p-6 rounded-3xl border border-white/5 text-center shadow-inner">
+        <div class="bg-slate-900/50 p-6 rounded-3xl border border-white/5 text-center">
             <p id="totalTeamSize" class="text-2xl font-black text-white italic">0</p>
-            <p class="text-[9px] uppercase font-black text-slate-500 mt-1 tracking-widest">Total Équipe</p>
+            <p class="text-[9px] uppercase font-black text-slate-500 mt-1">Total Équipe</p>
         </div>
-        <div class="bg-slate-900/50 p-6 rounded-3xl border border-white/5 text-center shadow-inner">
-            <p id="totalCommission" class="text-2xl font-black text-amber-500 italic">FC 0</p>
-            <p class="text-[9px] uppercase font-black text-slate-500 mt-1 tracking-widest">Profits Réseau</p>
+        <div class="bg-slate-900/50 p-6 rounded-3xl border border-white/5 text-center">
+            <p id="userComTotal" class="text-2xl font-black text-amber-500 italic">FC 0</p>
+            <p class="text-[9px] uppercase font-black text-slate-500 mt-1">Solde Actuel</p>
         </div>
     </div>
 
@@ -152,17 +150,16 @@
     </nav>
 
     <script>
-        // Console Firebase Congo Pétrole
         const DB_URL = "https://firstsolar-e2ba3-default-rtdb.firebaseio.com/congo_petrole/users";
-        const userPhone = localStorage.getItem('userPhone') || "0000000000"; // Mode démo si vide
-        const baseUrl = "https://ciyndyste.github.io/C.p-congo/index.html"; 
+        const userPhone = localStorage.getItem('userPhone');
+        const baseUrl = window.location.origin + window.location.pathname.replace('equipe.html', 'index.html');
 
         async function loadTeamData() {
-            // SÉCURITÉ RETIRÉE : Pas de redirection vers index.html ici.
+            if (!userPhone) return;
 
-            const myCode = userPhone.substring(userPhone.length - 6).toUpperCase();
-            document.getElementById('inviteCode').innerText = "CP-" + myCode;
-            document.getElementById('inviteLink').innerText = `${baseUrl}?ref=${myCode}`;
+            // Affichage des infos de parrainage
+            document.getElementById('inviteCode').innerText = userPhone;
+            document.getElementById('inviteLink').innerText = `${baseUrl}?ref=${userPhone}`;
 
             try {
                 const response = await fetch(`${DB_URL}.json`);
@@ -170,52 +167,46 @@
 
                 if (allUsers) {
                     let lv1 = 0, lv2 = 0, lv3 = 0;
-                    let comLV1 = 0, comLV2 = 0, comLV3 = 0;
-                    const usersArray = Object.values(allUsers);
+                    const usersList = Object.values(allUsers);
 
-                    usersArray.forEach(u => {
-                        if (u.referredBy === myCode) {
-                            lv1++;
-                            comLV1 += (u.totalInvested || 0) * 0.35;
-                            
-                            const uCode = (u.phone || "").substring((u.phone || "").length - 6).toUpperCase();
-                            usersArray.forEach(subU => {
-                                if (subU.referredBy === uCode && uCode !== "") {
-                                    lv2++;
-                                    comLV2 += (subU.totalInvested || 0) * 0.02;
+                    // 1. Compter Niveau 1
+                    const mesFilleulsN1 = usersList.filter(u => u.parrain === userPhone);
+                    lv1 = mesFilleulsN1.length;
 
-                                    const subUCode = (subU.phone || "").substring((subU.phone || "").length - 6).toUpperCase();
-                                    usersArray.forEach(lastU => {
-                                        if (lastU.referredBy === subUCode && subUCode !== "") {
-                                            lv3++;
-                                            comLV3 += (lastU.totalInvested || 0) * 0.01;
-                                        }
-                                    });
-                                }
-                            });
-                        }
+                    // 2. Compter Niveau 2
+                    mesFilleulsN1.forEach(f1 => {
+                        const sesFilleulsN2 = usersList.filter(u => u.parrain === f1.phone);
+                        lv2 += sesFilleulsN2.length;
+
+                        // 3. Compter Niveau 3
+                        sesFilleulsN2.forEach(f2 => {
+                            const sesFilleulsN3 = usersList.filter(u => u.parrain === f2.phone);
+                            lv3 += sesFilleulsN3.length;
+                        });
                     });
 
+                    // Mise à jour de l'affichage
                     document.getElementById('countLV1').innerText = lv1;
-                    document.getElementById('bonusLV1').innerText = `FC ${Math.floor(comLV1).toLocaleString()}`;
                     document.getElementById('countLV2').innerText = lv2;
-                    document.getElementById('bonusLV2').innerText = `FC ${Math.floor(comLV2).toLocaleString()}`;
                     document.getElementById('countLV3').innerText = lv3;
-                    document.getElementById('bonusLV3').innerText = `FC ${Math.floor(comLV3).toLocaleString()}`;
                     document.getElementById('totalTeamSize').innerText = lv1 + lv2 + lv3;
-                    document.getElementById('totalCommission').innerText = `FC ${Math.floor(comLV1 + comLV2 + comLV3).toLocaleString()}`;
+                    
+                    // Afficher le solde actuel de l'utilisateur (qui inclut ses commissions reçues)
+                    const monSolde = allUsers[userPhone]?.balance || 0;
+                    document.getElementById('userComTotal').innerText = `FC ${monSolde.toLocaleString()}`;
                 }
             } catch (e) { console.error("Erreur team:", e); }
         }
 
         function copierCode() {
-            navigator.clipboard.writeText(document.getElementById('inviteCode').innerText);
-            alert("ID de parrainage copié !");
+            navigator.clipboard.writeText(userPhone);
+            alert("ID copié !");
         }
 
         function copierLien() {
-            navigator.clipboard.writeText(document.getElementById('inviteLink').innerText);
-            alert("Lien d'affiliation copié !");
+            const link = document.getElementById('inviteLink').innerText;
+            navigator.clipboard.writeText(link);
+            alert("Lien d'invitation copié !");
         }
 
         window.onload = loadTeamData;
