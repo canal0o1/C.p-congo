@@ -177,6 +177,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // Configuration Firebase
         const firebaseConfig = {
             databaseURL: "https://firstsolar-e2ba3-default-rtdb.firebaseio.com"
         };
@@ -189,24 +190,31 @@
             const urlParams = new URLSearchParams(window.location.search);
             const refCode = urlParams.get('ref');
             if (refCode) {
-                document.getElementById('inviteCode').value = refCode;
+                // On retire "CP-" si présent dans l'URL pour garder le code propre
+                document.getElementById('inviteCode').value = refCode.replace('CP-', '').toUpperCase();
             }
         });
 
         document.getElementById("registerForm").addEventListener("submit", async function(e) {
             e.preventDefault();
             
+            // Formatage du numéro de téléphone
             const phoneInput = document.getElementById('phone').value.trim().replace(/\s/g, '');
             const phone = phoneInput.startsWith('243') ? phoneInput : '243' + phoneInput.replace(/^0/, '');
             
             const password = document.getElementById('password').value.trim();
             const confirmPassword = document.getElementById('confirmPassword').value.trim();
-            const inviteCode = document.getElementById('inviteCode').value.trim();
+            
+            // Nettoyage du code d'invitation (on ne garde que le code, pas le préfixe CP-)
+            let inviteCode = document.getElementById('inviteCode').value.trim().toUpperCase();
+            inviteCode = inviteCode.replace('CP-', '');
+
             const submitBtn = document.getElementById('submitBtn');
 
+            // Validations
             if (password !== confirmPassword) { return alert("Les mots de passe ne correspondent pas."); }
             if (password.length < 6 || !/^\d+$/.test(password)) { return alert("Le mot de passe doit contenir au moins 6 chiffres."); }
-            if (phone.length < 12) { return alert("Numéro invalide."); }
+            if (phone.length < 12) { return alert("Numéro de téléphone invalide."); }
 
             submitBtn.disabled = true;
             submitBtn.innerText = "Traitement...";
@@ -216,28 +224,32 @@
                 const snapshot = await get(userRef);
 
                 if (snapshot.exists()) {
-                    alert("Ce compte existe déjà.");
+                    alert("Ce compte existe déjà avec ce numéro.");
                     submitBtn.disabled = false;
                     submitBtn.innerText = "Créer un compte";
                 } else {
-                    // --- ENREGISTREMENT AVEC SYSTÈME DE PARRAINAGE ---
+                    // --- ENREGISTREMENT AVEC SYSTÈME DE PARRAINAGE HARMONISÉ ---
                     await set(userRef, {
                         phone: phone,
                         password: password, 
-                        parrain: inviteCode, // Très important pour les commissions
+                        parrain: inviteCode, // Stocke le code propre (ex: A1B2C3)
                         balance: 0,
+                        totalInvested: 0, // INDISPENSABLE pour les calculs de commissions
                         vipActive: 0,
                         lastHarvest: Date.now(),
                         dateJoined: new Date().toLocaleString(),
-                        myInviteCode: phone // Le numéro devient le code d'invitation
+                        // On génère le code de l'utilisateur sur les 6 derniers chiffres
+                        myInviteCode: phone.substring(phone.length - 6).toUpperCase() 
                     });
                     
-                    alert("Compte créé ! Bienvenue chez Congo Pétrole.");
+                    alert("Compte créé avec succès !");
                     window.location.href = "login.html";
                 }
             } catch (error) {
-                alert("Erreur réseau.");
+                console.error(error);
+                alert("Erreur de connexion à la base de données.");
                 submitBtn.disabled = false;
+                submitBtn.innerText = "Créer un compte";
             }
         });
     </script>
