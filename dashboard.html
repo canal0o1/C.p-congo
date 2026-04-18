@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Congo Pétrole | Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --gold: #f59e0b; --oil-black: #020617; }
+        body { background: var(--oil-black); font-family: 'Inter', sans-serif; color: white; margin: 0; }
+        
+        .oil-card { 
+            background: rgba(30, 41, 59, 0.7); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(245, 158, 11, 0.3); 
+            border-radius: 24px; 
+        }
+        
+        .btn-action { 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid rgba(245, 158, 11, 0.2); 
+            border-radius: 18px; 
+            transition: 0.3s; 
+        }
+        .btn-action:active { transform: scale(0.95); background: var(--gold); color: black; }
+
+        .slider-container { position: relative; width: 100%; height: 220px; overflow: hidden; border-radius: 0 0 30px 30px; }
+        .slide { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            opacity: 0; transition: opacity 1s ease-in-out; object-fit: cover;
+        }
+        .slide.active { opacity: 1; }
+
+        .modal-overlay {
+            display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: #1e293b; color: white; width: 85%; max-width: 350px;
+            border-radius: 30px; padding: 30px; text-align: center; border: 1px solid var(--gold);
+        }
+
+        .nav-bottom { 
+            background: rgba(15, 23, 42, 0.95); 
+            backdrop-filter: blur(10px); 
+            border-top: 1px solid rgba(245, 158, 11, 0.2); 
+        }
+    </style>
+</head>
+<body class="pb-28">
+
+    <div id="announcementModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-bullhorn text-2xl text-amber-500"></i>
+            </div>
+            <h2 class="text-xl font-black text-amber-500 mb-2 uppercase italic">Congo Pétrole</h2>
+            <p class="text-[12px] font-medium text-slate-300 mb-6 leading-relaxed">
+                Rejoignez notre canal officiel pour suivre les cours du baril et recevoir vos bonus.
+            </p>
+            <a href="https://t.me/+urw0HCz-zis5YzA0" target="_blank" class="block w-full py-4 bg-amber-500 text-black rounded-2xl font-black shadow-lg text-center active:scale-95 transition-all uppercase text-sm italic">
+                <i class="fa-brands fa-telegram mr-2 text-xl"></i> Canal Officiel
+            </a>
+            <button onclick="closeModal()" class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-6">Ignorer</button>
+        </div>
+    </div>
+
+    <div class="slider-container shadow-2xl">
+        <img src="IMG_4592.jpeg" class="slide active">
+        <img src="IMG_4593.jpeg" class="slide">
+        <img src="IMG_4594.jpeg" class="slide">
+        <img src="IMG_4595.jpeg" class="slide">
+    </div>
+
+    <div class="px-5 -mt-8 relative z-10">
+        <div class="oil-card p-6 grid grid-cols-2 gap-4 text-center shadow-2xl">
+            <div class="border-r border-amber-500/20">
+                <p id="userBalance" class="text-xl font-black italic text-amber-500">FC 0</p>
+                <p class="text-[9px] font-bold opacity-50 uppercase tracking-widest">Capital forage</p>
+            </div>
+            <div>
+                <p id="totalRevenue" class="text-xl font-black italic text-green-500">FC 0</p>
+                <p class="text-[9px] font-bold opacity-50 uppercase tracking-widest">Profit Total</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="px-5 mt-4">
+        <div class="bg-amber-500/5 p-3 rounded-xl flex items-center border border-amber-500/10">
+            <i class="fa-solid fa-chart-line text-amber-500 mr-3 animate-pulse"></i>
+            <marquee class="text-[11px] font-bold text-amber-200/80 uppercase tracking-tighter">
+                Chargement des données du marché en temps réel... Bienvenue sur Congo Pétrole.
+            </marquee>
+        </div>
+    </div>
+
+    <div class="px-5 mt-6">
+        <div class="grid grid-cols-3 gap-3">
+            <a href="recharge.html" class="btn-action flex flex-col items-center p-4">
+                <i class="fa-solid fa-gas-pump text-amber-500 text-2xl mb-2"></i>
+                <span class="text-[9px] font-black uppercase tracking-tighter">Dépôt</span>
+            </a>
+            <a href="retrait.html" class="btn-action flex flex-col items-center p-4">
+                <i class="fa-solid fa-faucet-drip text-amber-500 text-2xl mb-2"></i>
+                <span class="text-[9px] font-black uppercase tracking-tighter">Retrait</span>
+            </a>
+            <a href="https://t.me/+urw0HCz-zis5YzA0" class="btn-action flex flex-col items-center p-4">
+                <i class="fa-solid fa-headset text-amber-500 text-2xl mb-2"></i>
+                <span class="text-[9px] font-black uppercase tracking-tighter">Support</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="px-5 mt-6">
+        <div class="rounded-3xl overflow-hidden border border-amber-500/20 shadow-xl">
+            <img src="IMG_4592.jpeg" class="w-full h-auto opacity-80">
+        </div>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 nav-bottom p-5 flex justify-around items-center z-50">
+        <a href="dashboard.html" class="flex flex-col items-center text-amber-500">
+            <i class="fa-solid fa-droplet text-xl"></i>
+            <span class="text-[9px] font-bold mt-1 uppercase">Puits</span>
+        </a>
+        <a href="produit.html" class="flex flex-col items-center text-slate-500">
+            <i class="fa-solid fa-barrel-oil text-xl"></i>
+            <span class="text-[9px] font-bold mt-1 uppercase">Marché</span>
+        </a>
+        <a href="equipe.html" class="flex flex-col items-center text-slate-500">
+            <i class="fa-solid fa-network-wired text-xl"></i>
+            <span class="text-[9px] font-bold mt-1 uppercase">Réseau</span>
+        </a>
+        <a href="compte.html" class="flex flex-col items-center text-slate-500">
+            <i class="fa-solid fa-user-gear text-xl"></i>
+            <span class="text-[9px] font-bold mt-1 uppercase">Profil</span>
+        </a>
+    </nav>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+        setInterval(nextSlide, 5000);
+
+        const DB_URL = "https://firstsolar-e2ba3-default-rtdb.firebaseio.com/congo_petrole/users";
+        const userPhone = localStorage.getItem('userPhone');
+
+        function closeModal() {
+            document.getElementById('announcementModal').style.display = 'none';
+        }
+
+        async function fetchUserData() {
+            if (!userPhone) {
+                // On affiche 0 par défaut en attendant la connexion réelle
+                document.getElementById('userBalance').innerText = "FC 0";
+                document.getElementById('totalRevenue').innerText = "FC 0";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${DB_URL}/${userPhone}.json`);
+                const user = await response.json();
+                if (user) {
+                    document.getElementById('userBalance').innerText = `FC ${parseFloat(user.balance || 0).toLocaleString()}`;
+                    document.getElementById('totalRevenue').innerText = `FC ${parseFloat(user.profitTotal || 0).toLocaleString()}`;
+                }
+            } catch (error) {
+                console.log("Erreur de chargement Firebase");
+            }
+        }
+
+        window.onload = fetchUserData;
+    </script>
+</body>
+</html>
