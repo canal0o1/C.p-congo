@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Congo Pétrole | Connexion Partenaire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { 
+            --gold: #f59e0b; 
+            --dark-oil: #020617; 
+        }
+        
+        body { 
+            margin: 0; padding: 0;
+            display: flex; align-items: center; justify-content: center; 
+            min-height: 100vh;
+            background: url('IMG_4394.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75); z-index: 1;
+        }
+
+        .oil-card { 
+            position: relative; z-index: 10;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 35px;
+            padding: 40px 30px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+
+        h1 { 
+            color: var(--gold);
+            font-size: 2rem;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .input-group { margin-bottom: 20px; text-align: left; }
+        
+        input { 
+            width: 100%;
+            padding: 18px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            outline: none;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        input:focus { 
+            border-color: var(--gold);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .btn-gold {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #000;
+            border: none;
+            border-radius: 15px;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(217, 119, 6, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-gold:active { transform: scale(0.96); }
+
+        .reg-link { 
+            color: var(--gold);
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+
+    <div class="oil-card">
+        <div class="mb-8">
+            <div class="inline-block p-4 rounded-full bg-amber-500/10 mb-4">
+                <i class="fa-solid fa-unlock-keyhole text-4xl text-amber-500"></i>
+            </div>
+            <h1>Accès <span class="text-white">Privé</span></h1>
+            <p class="text-[9px] text-gray-400 uppercase tracking-[0.4em] mt-2 font-bold">Congo Pétrole Business</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="tel" id="phone" placeholder="Numéro de téléphone" required>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Mot de passe" required>
+            </div>
+
+            <button type="submit" id="loginBtn" class="btn-gold">
+                Se Connecter
+            </button>
+        </form>
+
+        <p class="text-center mt-8 text-xs text-gray-400 uppercase font-medium">
+            Nouveau dans le secteur ? <a href="index.html" class="reg-link">Créer un compte</a>
+        </p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            databaseURL: "https://firstsolar-e2ba3-default-rtdb.firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.getElementById("loginForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            
+            const phone = document.getElementById('phone').value.trim().replace(/\+/g, '');
+            const password = document.getElementById('password').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
+
+            loginBtn.disabled = true;
+            loginBtn.innerText = "VÉRIFICATION...";
+
+            try {
+                // On cherche dans le dossier spécifique 'congo_petrole'
+                const userRef = ref(db, 'congo_petrole/users/' + phone);
+                const snapshot = await get(userRef);
+
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    
+                    if (userData.password === password) {
+                        localStorage.setItem('userPhone', phone);
+                        localStorage.setItem('projectName', 'CongoPetrole');
+                        
+                        alert("Connexion réussie !");
+                        window.location.href = "dashboard.html";
+                    } else {
+                        alert("Mot de passe incorrect.");
+                        loginBtn.disabled = false;
+                        loginBtn.innerText = "Se Connecter";
+                    }
+                } else {
+                    alert("Ce numéro n'est pas enregistré sur Congo Pétrole.");
+                    loginBtn.disabled = false;
+                    loginBtn.innerText = "Se Connecter";
+                }
+            } catch (error) {
+                alert("Erreur de connexion au serveur.");
+                loginBtn.disabled = false;
+                loginBtn.innerText = "Se Connecter";
+            }
+        });
+    </script>
+</body>
+</html>
