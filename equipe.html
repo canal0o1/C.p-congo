@@ -155,14 +155,14 @@
         // Console Firebase Congo Pétrole
         const DB_URL = "https://firstsolar-e2ba3-default-rtdb.firebaseio.com/congo_petrole/users";
         const userPhone = localStorage.getItem('userPhone') || "0000000000"; // Mode démo si vide
-        const baseUrl = "https://votre-site.github.io/congo/inscription.html"; // À adapter selon ton lien GitHub
+        const baseUrl = "https://ciyndyste.github.io/C.p-congo/index.html"; 
 
         async function loadTeamData() {
             // SÉCURITÉ RETIRÉE : Pas de redirection vers index.html ici.
 
             const myCode = userPhone.substring(userPhone.length - 6).toUpperCase();
             document.getElementById('inviteCode').innerText = "CP-" + myCode;
-            document.getElementById('inviteLink').innerText = `${baseUrl}?c=${myCode}`;
+            document.getElementById('inviteLink').innerText = `${baseUrl}?ref=${myCode}`;
 
             try {
                 const response = await fetch(`${DB_URL}.json`);
