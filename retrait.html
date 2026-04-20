@@ -67,7 +67,7 @@
                 </div>
                 <div class="flex items-center text-[10px] font-bold text-slate-400">
                     <i class="fa-solid fa-circle-minus w-5 text-amber-500"></i>
-                    <span>Minimum : 4.200 FC</span>
+                    <span>Minimum : 6.200 FC</span>
                 </div>
                 <div class="flex items-center text-[10px] font-bold text-slate-400">
                     <i class="fa-solid fa-percent w-5 text-amber-500"></i>
@@ -80,9 +80,9 @@
             <form id="withdrawalForm" class="space-y-6">
                 <div>
                     <label class="text-[9px] font-black uppercase text-slate-500 ml-1 tracking-widest">Montant à extraire (FC)</label>
-                    <input type="number" id="amount" placeholder="Min. 4200" 
+                    <input type="number" id="amount" placeholder="Min. 6200" 
                            class="w-full p-4 rounded-2xl text-xl font-black italic mt-1" 
-                           min="4200" required>
+                           min="6200" required>
                 </div>
 
                 <div class="bg-black/30 p-4 rounded-2xl border border-white/5">
@@ -141,7 +141,6 @@
                     userCurrentBalance = user.balance || 0;
                     document.getElementById('currentBalanceDisplay').innerText = `FC ${userCurrentBalance.toLocaleString()}`;
                     
-                    // Vérification de l'éligibilité (Doit avoir un forage actif)
                     if (user.vipActive) {
                         const badge = document.getElementById('vipStatusBadge');
                         badge.innerText = "ÉLIGIBLE";
@@ -177,7 +176,6 @@
             }
         }
 
-        // Calcul automatique des frais
         document.getElementById('amount').addEventListener('input', function() {
             const val = parseFloat(this.value) || 0;
             const fees = val * 0.12;
@@ -193,7 +191,8 @@
             const network = document.getElementById('network').value;
             const phone = document.getElementById('userPhoneInput').value;
 
-            if (amount < 4200) return alert("Le montant minimum d'extraction est de 4.200 FC.");
+            // MISE À JOUR DU MINIMUM ICI
+            if (amount < 6200) return alert("Le montant minimum d'extraction est de 6.200 FC.");
             if (amount > userCurrentBalance) return alert("Capital insuffisant dans votre puits !");
 
             if (confirm(`Confirmer l'extraction de FC ${amount.toLocaleString()} ?\nNet à recevoir : FC ${Math.floor(net).toLocaleString()}`)) {
@@ -202,14 +201,12 @@
                     btn.disabled = true;
                     btn.innerText = "Extraction en cours...";
 
-                    // 1. Mise à jour du solde
                     const nouveauSolde = userCurrentBalance - amount;
                     await fetch(`${DB_URL}/users/${loggedUserPhone}.json`, {
                         method: 'PATCH',
                         body: JSON.stringify({ balance: nouveauSolde })
                     });
 
-                    // 2. Création de la demande pour l'admin
                     const requestData = {
                         user: loggedUserPhone,
                         montant: amount,
@@ -225,10 +222,10 @@
                         body: JSON.stringify(requestData)
                     });
 
-                    alert("Demande d'extraction réussie ! Vos fonds arriveront sur votre compte mobile après validation.");
+                    alert("Demande d'extraction réussie !");
                     window.location.href = "compte.html";
                 } catch (e) { 
-                    alert("Erreur de communication avec le serveur.");
+                    alert("Erreur serveur.");
                     location.reload();
                 }
             }
